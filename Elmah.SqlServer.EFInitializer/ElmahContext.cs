@@ -1,5 +1,7 @@
 namespace Elmah.SqlServer.EFInitializer
 {
+    #region References
+
     using System;
     using System.Collections;
     using System.ComponentModel.DataAnnotations;
@@ -7,14 +9,23 @@ namespace Elmah.SqlServer.EFInitializer
     using System.Configuration;
     using System.Data.Entity;
 
+    #endregion
+
     public class ElmahContext : DbContext
     {
-        public ElmahContext() : this(GetConnectionStringFromConfig()) {}
+        #region Constructors
 
+        public ElmahContext() : this(GetConnectionStringFromConfig()) {}
         public ElmahContext(string nameOrConnectionString) : base(nameOrConnectionString) {}
+
+        #endregion
+
+        #region Fields and Properties
 
         // ReSharper disable once InconsistentNaming
         public virtual DbSet<ELMAH_Error> ELMAH_Errors { get; set; }
+
+        #endregion
 
         private static string GetConnectionStringFromConfig()
         {
@@ -34,42 +45,45 @@ namespace Elmah.SqlServer.EFInitializer
     // ReSharper disable once InconsistentNaming
     public class ELMAH_Error
     {
-        [Key]
-        public Guid ErrorId { get; set; }
+        #region Fields and Properties
+
+        [Column(TypeName = "ntext")]
+        [Required]
+        public string AllXml { get; set; }
 
         [Required]
         [StringLength(60)]
         public string Application { get; set; }
+
+        [Key]
+        public Guid ErrorId { get; set; }
 
         [Required]
         [StringLength(50)]
         public string Host { get; set; }
 
         [Required]
-        [StringLength(100)]
-        public string Type { get; set; }
+        [StringLength(500)]
+        public string Message { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Sequence { get; set; }
 
         [Required]
         [StringLength(60)]
         public string Source { get; set; }
 
+        public int StatusCode { get; set; }
+        public DateTime TimeUtc { get; set; }
+
         [Required]
-        [StringLength(500)]
-        public string Message { get; set; }
+        [StringLength(100)]
+        public string Type { get; set; }
 
         [Required]
         [StringLength(50)]
         public string User { get; set; }
 
-        public int StatusCode { get; set; }
-
-        public DateTime TimeUtc { get; set; }
-
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Sequence { get; set; }
-
-        [Column(TypeName = "ntext")]
-        [Required]
-        public string AllXml { get; set; }
+        #endregion
     }
 }
